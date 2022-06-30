@@ -7,7 +7,7 @@ NAME=$5
 BUCKET=$6
 
 BACKUP_NAME=${NAME}_`date +"%m-%d-%y_%H-%M-%S_%s"`.sql
-pg_dump -h $DOMAIN -p $PORT -d $DATABASE -U $USER > $BACKUP_NAME 
+pg_dump -h $DOMAIN -p $PORT -d $DATABASE -U $USERNAME > $BACKUP_NAME 
 
 mc alias set s3 $S3_DOMAIN $S3_ACCESS_KEY $S3_SECRET_KEY 1>&2
 mc mb s3/$BUCKET 1>&2
