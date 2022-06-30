@@ -63,7 +63,7 @@ backup = KOP(
 )
 
 # check if backup is healty
-restore_cmd = "restore localhost 5432 username alan_touring dummy".split()
+restore_cmd = "check_restore dummy".split()
 check_restore = KubernetesPodOperator(
     namespace="air",
     image="<CICD_IMAGE_PLACEHOLDER>",  # do not change!
@@ -77,7 +77,7 @@ check_restore = KubernetesPodOperator(
     in_cluster=True,
     # is_delete_operator_pod=True,
     env_vars={
-        "POSTGRESQL_USERNAME": "username",
+        "POSTGRESQL_USERNAME": "postgres",
         "POSTGRESQL_PASSWORD": "password",
         "PGPASSWORD": "password",
         "BACKUP_NAME": '{{ task_instance.xcom_pull(task_ids="postgres_backup", key="return_value")["name"] }}',
