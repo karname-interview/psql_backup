@@ -36,7 +36,8 @@ dag = DAG(
 
 start = DummyOperator(task_id='start', dag=dag)
 
-backup_cmd = "/bin/bash -c './backup.sh ki-dev-dummy-rsc-postgresql.ki-dev-dummy 5432 alan alan_touring alan_touring_dev dummy_backups > /airflow/xcom/return.json'".split()
+base_command="./backup.sh ki-dev-dummy-rsc-postgresql.ki-dev-dummy 5432 alan alan_touring alan_touring_dev dummy_backups"
+backup_cmd = f"/bin/bash -c {base_command} > /airflow/xcom/return.json".split()
 backup = KOP(
     namespace="air",
     image="<CICD_IMAGE_PLACEHOLDER>",  # do not change!
