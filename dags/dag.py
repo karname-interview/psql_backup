@@ -63,19 +63,19 @@ backup = KOP(
 )
 
 # check if backup is healty
-restore_cmd = "./restore localhost 5432 username alan_touring dummy"
+restore_cmd = "restore localhost 5432 username alan_touring dummy".split()
 check_restore = KubernetesPodOperator(
     namespace="air",
     image="<CICD_IMAGE_PLACEHOLDER>",  # do not change!
     cmds=restore_cmd[0:1],
     arguments=restore_cmd[1:],
     labels={"service": "dummy"},
-    name="postgres_restore",
-    task_id="postgres_restore",
+    name="postgres_check_restore",
+    task_id="postgres_check_restore",
     dag=dag,
     get_logs=True,
     in_cluster=True,
-    is_delete_operator_pod=True,
+    # is_delete_operator_pod=True,
     env_vars={
         "POSTGRESQL_USERNAME": "username",
         "POSTGRESQL_PASSWORD": "password",
@@ -83,7 +83,8 @@ check_restore = KubernetesPodOperator(
         "BACKUP_NAME": '{{ task_instance.xcom_pull(task_ids="postgres_backup", key="return_value")["name"] }}',
     },
 )
-restore_cmd = "./restore ki-dev-dummy-rsc-postgresql.ki-dev-dummy 5432 alan alan_touring alan_touring_dev dummy"
+
+restore_cmd = "restore ki-dev-dummy-rsc-postgresql.ki-dev-dummy 5432 alan alan_touring alan_touring_dev dummy".split()
 restore = KubernetesPodOperator(
     namespace="air",
     image="<CICD_IMAGE_PLACEHOLDER>",  # do not change!
@@ -95,7 +96,7 @@ restore = KubernetesPodOperator(
     dag=dag,
     get_logs=True,
     in_cluster=True,
-    is_delete_operator_pod=True,
+    # is_delete_operator_pod=True,
     env_vars={
         "BACKUP_NAME": '{{ task_instance.xcom_pull(task_ids="postgres_backup", key="return_value")["name"] }}',
     },
@@ -103,5 +104,6 @@ restore = KubernetesPodOperator(
 
 
 start >> backup >> check_restore >> restore
+
 
 
