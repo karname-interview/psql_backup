@@ -6,6 +6,7 @@ from airflow.kubernetes.secret import Secret
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import (
     KubernetesPodOperator,
 )
+from airflow.operators.bash_operator import BashOperator
 from airflow.operators.dummy import DummyOperator
 
 from kubernetes.client import models as k8s
@@ -40,11 +41,11 @@ dag = DAG(
 start = DummyOperator(task_id="start", dag=dag)
 
 base_command = "./backup.sh ki-dev-dummy-rsc-postgresql.ki-dev-dummy 5432 alan alan_touring alan_touring_dev dummy"
-backup_cmd = f"/bin/bash -c \"{base_command} > /airflow/xcom/return.json\"".split()
+backup_cmd = f'/bin/bash -c "{base_command} > /airflow/xcom/return.json"'.split()
 backup = KOP(
     namespace="air",
     image="<CICD_IMAGE_PLACEHOLDER>",  # do not change!
-    cmds=["/bin/bash" ,"-c"],
+    cmds=["/bin/bash", "-c"],
     arguments=[f"{base_command} > /airflow/xcom/return.json"],
     labels={"service": "dummy"},
     name="postgres_backup",
@@ -87,7 +88,13 @@ check_restore = KubernetesPodOperator(
     },
 )
 
-restore_cmd = "restore ki-dev-dummy-rsc-postgresql.ki-dev-dummy 5432 alan alan_touring alan_touring_dev dummy".split()
+manual = BashOperator(
+    task_id="manual",
+    bash_command="/bin/false",
+    retries=0,
+    dag=dag,
+)
+restore_cmd = "restore ki-dev-dummy-rsc-postgresql.ki-dev-dummy 5432 alan dummy".split()
 restore = KubernetesPodOperator(
     namespace="air",
     image="<CICD_IMAGE_PLACEHOLDER>",  # do not change!
@@ -110,7 +117,4 @@ restore = KubernetesPodOperator(
 )
 
 
-start >> backup >> check_restore >> restore
-
-
-
+start >> backup >> check_restore >> manual >> restore
