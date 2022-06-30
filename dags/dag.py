@@ -49,7 +49,7 @@ backup = KOP(
     get_logs=True,
     in_cluster=True,
     is_delete_operator_pod=True,
-    xcom_push=True,
+    do_xcom_push=True,
 )
 env_vars={
             'VAR1_FROM_XCOM': '{{ task_instance.xcom_pull(task_ids="task_xcom_set", key="xcom_key_name") }}',
