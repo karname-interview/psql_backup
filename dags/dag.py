@@ -16,7 +16,8 @@ from airflow.utils.dates import days_ago
 class KOP(KubernetesPodOperator):
     template_ext = ()
 
-configmap=k8s.V1ConfigMapVolumeSource(name='dummy-dev-postgres-backup')
+# k8s.V1ConfigMapVolumeSource(name='dummy-dev-postgres-backup')
+configmap="dummy-dev-postgres-backup" 
 
 default_args = {
     "owner": "ArshiA Akhavan",
