@@ -11,5 +11,6 @@ COPY . .
 RUN chmod +x *.sh
 RUN ln -s /app/backup.sh /usr/bin/backup
 RUN ln -s /app/restore.sh /usr/bin/restore
+RUN ln -s /app/check_restore.sh /usr/bin/check_restore
 
 ENTRYPOINT ["/bin/bash","-c"]
