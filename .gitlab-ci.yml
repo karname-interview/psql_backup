@@ -51,7 +51,7 @@ push-dag:
         - git clone $DAG_REPO
         - cd dags
         - mkdir -p $CI_PROJECT_PATH
-        - cp $DAGS/stg* $CI_PROJECT_PATH
+        - cp $DAGS/* $CI_PROJECT_PATH
         - git add $CI_PROJECT_PATH/*
         - git config user.email "cicd@bigdata.digikala.com"
         - git config user.name "cicd"
