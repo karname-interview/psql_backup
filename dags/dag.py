@@ -13,8 +13,7 @@ from airflow.utils.dates import days_ago
 
 
 class KOP(KubernetesPodOperator):
-    pass
-    # template_ext = ()
+    template_ext = ()
 
 
 default_args = {
@@ -63,7 +62,7 @@ backup = KOP(
 )
 
 restore_cmd = f"echo filename is: $FILENAME".split()
-check_restore = KOP(
+check_restore = KubernetesPodOperator(
     namespace="air",
     image="<CICD_IMAGE_PLACEHOLDER>",  # do not change!
     cmds=backup_cmd[0:1],
