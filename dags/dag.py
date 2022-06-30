@@ -13,7 +13,8 @@ from airflow.utils.dates import days_ago
 
 
 class KOP(KubernetesPodOperator):
-    template_ext = ()
+    pass
+    # template_ext = ()
 
 
 default_args = {
@@ -36,11 +37,10 @@ dag = DAG(
     catchup=False,
 )
 
-
 start = DummyOperator(task_id="start", dag=dag)
 
-base_command = "./backup.sh ki-dev-dummy-rsc-postgresql.ki-dev-dummy 5432 alan alan_touring alan_touring_dev dummy_backups"
-backup_cmd = f"/bin/bash -c {base_command} > /airflow/xcom/return.json".split()
+base_command = "./backup.sh ki-dev-dummy-rsc-postgresql.ki-dev-dummy 5432 alan alan_touring alan_touring_dev dummy"
+backup_cmd = f"{base_command} > /airflow/xcom/return.json".split()
 backup = KOP(
     namespace="air",
     image="<CICD_IMAGE_PLACEHOLDER>",  # do not change!
@@ -52,11 +52,11 @@ backup = KOP(
     dag=dag,
     get_logs=True,
     in_cluster=True,
-    is_delete_operator_pod=True,
+    # is_delete_operator_pod=True,
     do_xcom_push=True,
     env_vars={
         "PGPASSWORD": "touring",
-        "S3_DOMAIN": "minio",
+        "S3_DOMAIN": "http://minio.air:9000",
         "S3_ACCESS_KEY": "minioadmin",
         "S3_SECRET_KEY": "minioadmin",
     },
@@ -82,3 +82,4 @@ check_restore = KOP(
 
 
 start >> backup >> check_restore
+
