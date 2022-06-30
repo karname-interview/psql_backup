@@ -6,6 +6,6 @@ RUN wget https://dl.min.io/client/mc/release/linux-amd64/mc
 RUN chmod +x mc
 RUN ln -s /app/mc /usr/bin/mc
 
-COPY --cmhod=+x backup.sh .
+COPY --chmod=+x backup.sh .
 ENTRYPOINT ["/bin/bash"]
 
