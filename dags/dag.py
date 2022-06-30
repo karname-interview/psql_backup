@@ -16,6 +16,7 @@ from airflow.utils.dates import days_ago
 class KOP(KubernetesPodOperator):
     template_ext = ()
 
+configmap=k8s.V1ConfigMapVolumeSource(name='dummy-dev-postgres-backup')
 
 default_args = {
     "owner": "ArshiA Akhavan",
@@ -55,11 +56,9 @@ backup = KOP(
     in_cluster=True,
     # is_delete_operator_pod=True,
     do_xcom_push=True,
+    configmaps=[configmap],
     env_vars={
-        "PGPASSWORD": "touring",
         "S3_DOMAIN": "http://minio.air:9000",
-        "S3_ACCESS_KEY": "minioadmin",
-        "S3_SECRET_KEY": "minioadmin",
     },
 )
 
@@ -77,20 +76,15 @@ check_restore = KubernetesPodOperator(
     get_logs=True,
     in_cluster=True,
     # is_delete_operator_pod=True,
+    configmaps=[configmap],
     env_vars={
-        "POSTGRESQL_USERNAME": "postgres",
-        "POSTGRESQL_PASSWORD": "password",
-        "PGPASSWORD": "password",
         "BACKUP_NAME": '{{ task_instance.xcom_pull(task_ids="postgres_backup", key="return_value")["name"] }}',
-        "S3_DOMAIN": "http://minio.air:9000",
-        "S3_ACCESS_KEY": "minioadmin",
-        "S3_SECRET_KEY": "minioadmin",
     },
 )
 
 manual = BashOperator(
     task_id="manual",
-    bash_command="/bin/false",
+    bash_command="exit 99;",
     retries=0,
     dag=dag,
 )
@@ -107,14 +101,12 @@ restore = KubernetesPodOperator(
     get_logs=True,
     in_cluster=True,
     # is_delete_operator_pod=True,
+    configmaps=[configmap],
     env_vars={
         "BACKUP_NAME": '{{ task_instance.xcom_pull(task_ids="postgres_backup", key="return_value")["name"] }}',
-        "PGPASSWORD": "touring",
-        "S3_DOMAIN": "http://minio.air:9000",
-        "S3_ACCESS_KEY": "minioadmin",
-        "S3_SECRET_KEY": "minioadmin",
     },
 )
 
 
 start >> backup >> check_restore >> manual >> restore
+

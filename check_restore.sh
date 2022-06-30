@@ -1,5 +1,8 @@
 #!/bin/bash
 BUCKET=$1
+export POSTGRESQL_USERNAME=postgres
+export POSTGRESQL_PASSWORD=password
+export PGPASSWORD=password
 
 mc alias set s3 $S3_DOMAIN $S3_ACCESS_KEY $S3_SECRET_KEY 1>&2
 mc cp s3/$BUCKET/$BACKUP_NAME ./$BACKUP_NAME 1>&2
