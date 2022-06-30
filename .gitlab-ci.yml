@@ -33,7 +33,7 @@ build:
         - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile
             --insecure --skip-tls-verify --destination $IMAGE_URL:$IMAGE_TAG
 
-:push-dag:
+push-dag:
     stage: deploy
     image:
         name: $BIGDATA_REG_URL/infra/dagger:2.2.9
