@@ -6,5 +6,7 @@ mc cp s3/$BUCKET/$BACKUP_NAME ./$BACKUP_NAME 1>&2
 
 # run postgres
 /opt/bitnami/scripts/postgresql/entrypoint.sh /opt/bitnami/scripts/postgresql/run.sh 1>&2 2>/dev/null&
+echo "waiting for postgres server to start"
+sleep 10
 echo "postgres server started"
 psql -h localhost -p 5432 -U postgres <$BACKUP_NAME 
