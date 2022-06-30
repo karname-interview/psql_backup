@@ -76,7 +76,7 @@ check_restore = KOP(
     in_cluster=True,
     is_delete_operator_pod=True,
     env_vars={
-        "FILENAME": '{{ task_instance.xcom_pull(task_ids="postgres_backup", key="resturn_value") }}',
+        "FILENAME": '{{ task_instance.xcom_pull(task_ids="postgres_backup", key="resturn_value")["name"] }}',
     },
 )
 
