@@ -33,27 +33,29 @@ build:
         - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile
             --insecure --skip-tls-verify --destination $IMAGE_URL:$IMAGE_TAG
 
-push-dag:
+:push-dag:
     stage: deploy
     image:
-        name: alpine/git:latest
+        name: $BIGDATA_REG_URL/infra/dagger:2.2.9
         entrypoint: [""]
     only:
         refs:
             - master
     before_script:
         - DAGS=$PWD/dags/
-        - echo "update image version in the dag file for airflow"
-        - sed "s@<CICD_IMAGE_PLACEHOLDER>@$IMAGE_URL:$IMAGE_TAG@g" -i ./dags/*
+        - dagger --image $IMAGE_URL:$IMAGE_TAG --pattern $CI_PROJECT_URL --hash $CI_PROJECT_URL $DAGS/*
     script:
         - echo "update dag repo:"
         - cd /tmp
         - git clone $DAG_REPO
         - cd dags
-        - mkdir -p $CI_PROJECT_PATH
-        - cp $DAGS/* $CI_PROJECT_PATH
-        - git add $CI_PROJECT_PATH/*
+        - mkdir -p $CI_PROJECT_PATH/$CI_COMMIT_BRANCH
+        - rm -rf $CI_PROJECT_PATH/$CI_COMMIT_BRANCH
+        - mkdir -p $CI_PROJECT_PATH/$CI_COMMIT_BRANCH
+        - cp $DAGS/* $CI_PROJECT_PATH/$CI_COMMIT_BRANCH
+        - git add $CI_PROJECT_PATH/$CI_COMMIT_BRANCH
         - git config user.email "cicd@bigdata.digikala.com"
         - git config user.name "cicd"
         - git commit -m "update image for dags related to $CI_PROJECT_NAME"
         - git push
+
