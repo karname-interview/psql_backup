@@ -81,6 +81,9 @@ check_restore = KubernetesPodOperator(
         "POSTGRESQL_PASSWORD": "password",
         "PGPASSWORD": "password",
         "BACKUP_NAME": '{{ task_instance.xcom_pull(task_ids="postgres_backup", key="return_value")["name"] }}',
+        "S3_DOMAIN": "http://minio.air:9000",
+        "S3_ACCESS_KEY": "minioadmin",
+        "S3_SECRET_KEY": "minioadmin",
     },
 )
 
@@ -99,6 +102,10 @@ restore = KubernetesPodOperator(
     # is_delete_operator_pod=True,
     env_vars={
         "BACKUP_NAME": '{{ task_instance.xcom_pull(task_ids="postgres_backup", key="return_value")["name"] }}',
+        "PGPASSWORD": "touring",
+        "S3_DOMAIN": "http://minio.air:9000",
+        "S3_ACCESS_KEY": "minioadmin",
+        "S3_SECRET_KEY": "minioadmin",
     },
 )
 
