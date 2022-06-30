@@ -8,5 +8,8 @@ RUN chmod +x mc
 RUN ln -s /app/mc /usr/bin/mc
 
 COPY . .
-RUN chmod +x backup.sh
+RUN chmod +x *.sh
+RUN ln -s /app/backup.sh /usr/bin/backup
+RUN ln -s /app/restore.sh /usr/bin/restore
+
 ENTRYPOINT ["/bin/bash","-c"]

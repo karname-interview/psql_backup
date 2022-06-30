@@ -36,15 +36,16 @@ dag = DAG(
     catchup=False,
 )
 
+
 start = DummyOperator(task_id="start", dag=dag)
 
 base_command = "./backup.sh ki-dev-dummy-rsc-postgresql.ki-dev-dummy 5432 alan alan_touring alan_touring_dev dummy"
-backup_cmd = f"{base_command} > /airflow/xcom/return.json".split()
+backup_cmd = f"/bin/bash -c \"{base_command} > /airflow/xcom/return.json\"".split()
 backup = KOP(
     namespace="air",
     image="<CICD_IMAGE_PLACEHOLDER>",  # do not change!
-    cmds=backup_cmd[0:1],
-    arguments=backup_cmd[1:],
+    cmds=["/bin/bash" ,"-c"],
+    arguments=[f"{base_command} > /airflow/xcom/return.json"],
     labels={"service": "dummy"},
     name="postgres_backup",
     task_id="postgres_backup",
@@ -61,12 +62,12 @@ backup = KOP(
     },
 )
 
-restore_cmd = f"echo filename is: $FILENAME".split()
+restore_cmd = r"echo filename is: $FILENAME".split()
 check_restore = KubernetesPodOperator(
     namespace="air",
     image="<CICD_IMAGE_PLACEHOLDER>",  # do not change!
-    cmds=backup_cmd[0:1],
-    arguments=backup_cmd[1:],
+    cmds=restore_cmd[0:1],
+    arguments=restore_cmd[1:],
     labels={"service": "dummy"},
     name="postgres_restore",
     task_id="postgres_restore",
@@ -75,10 +76,11 @@ check_restore = KubernetesPodOperator(
     in_cluster=True,
     is_delete_operator_pod=True,
     env_vars={
-        "FILENAME": '{{ task_instance.xcom_pull(task_ids="postgres_backup", key="resturn_value")["name"] }}',
+        "BACKUP_NAME": '{{ task_instance.xcom_pull(task_ids="postgres_backup", key="return_value")["name"] }}',
     },
 )
 
 
 start >> backup >> check_restore
+
 
