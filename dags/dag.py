@@ -105,7 +105,7 @@ manual = BashOperator(
 
 
 # to restore the backup generated in the task first task manualy
-restore_cmd = f"restore {pg_domain} {pg_port} {pg_user} {pg_backup_prefix}".split()
+restore_cmd = f"restore {pg_domain} {pg_port} {pg_user} {pg_database} {pg_backup_bucket}".split()
 restore = KubernetesPodOperator(
     namespace="air",
     image="<CICD_IMAGE_PLACEHOLDER>",  # do not change!
